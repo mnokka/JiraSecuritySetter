@@ -28,6 +28,17 @@ def issueService = ComponentAccessor.issueService
 
 def groupManager = ComponentAccessor.groupManager
 
+
+
+
+// CONFIGURATIONS
+def group1="xxx"" // first required  group for correct user indentification
+def group2="yyy"  // second required  group for correct user indentification
+def groupsCounter=0  // counter for allowed and required group partisipation
+def allowedGroupnsNmbr=2 // max number of groups for the user
+//
+
+
 // set logging to Jira log
 def log = Logger.getLogger("IssueSecuritySetter") // change for customer system
 log.setLevel(Level.DEBUG)  // DEBUG INFO
@@ -41,6 +52,38 @@ log.debug("Script run as a user: {$whoisthis}")
 
 def groupNames = groupManager.getGroupNamesForUser(whoisthis)
 log.debug("User: {$groupNames}")
+def numberOfGroups=groupNames.size()
+log.debug("Number of groups: {$numberOfGroups}")
+
+
+// in POC case, user with limited access, only in two user groups
+if  (ComponentAccessor.groupManager.isUserInGroup(whoisthis, group1)) {
+	log.debug("User IS in group: {$group1}")
+	groupsCounter=groupsCounter+1
+}
+else {
+	log.debug("User is NOT in group: {$group1}")
+}
+
+
+if  (ComponentAccessor.groupManager.isUserInGroup(whoisthis, group2)) {
+	log.debug("User IS in group: {$group1}")
+	groupsCounter=groupsCounter+1
+}
+else {
+	log.debug("User is NOT in group: {$group1}")
+}
+
+
+if(allowedGroupnsNmbr==groupsCounter) {
+	log.debug("User is only allowed groups: {$allowedGroupnsNmbr}")
+	log.debug("Going to do issue security settings change")
+}
+else {
+	log.debug("User is listed in more than allowed groups: {$numberOfGroups}.  (allowed:{$allowedGroupnsNmbr}")
+	log.debug("Not going to do any issue security settings")
+}
+
 
 
 
